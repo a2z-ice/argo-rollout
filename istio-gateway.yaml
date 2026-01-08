@@ -1,0 +1,18 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: my-app-vsvc
+spec:
+  gateways:
+  - my-gateway
+  hosts:
+  - my-app.example.com
+  http:
+  - name: primary-route
+    route:
+    - destination:
+        host: my-app-stable  # Points to Blue
+      weight: 100
+    - destination:
+        host: my-app-canary  # Points to Green
+      weight: 0

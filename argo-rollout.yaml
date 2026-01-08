@@ -1,0 +1,31 @@
+# https://argo-rollouts.readthedocs.io/en/stable/features/traffic-management/
+
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: my-app-rollout
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    # ... your pod spec ...
+  strategy:
+    canary:
+      canaryService: my-app-canary
+      stableService: my-app-stable
+      trafficRouting:
+        istio:
+          virtualService:
+            name: my-app-vsvc
+            routes:
+            - primary-route
+      steps:
+      - setHeaderRoute:
+          name: test-header-route
+          match:
+          - headerName: user-x-test
+            headerValue:
+              exact: "true"
+      - pause: {} # Rollout stops here for Jenkins testing
